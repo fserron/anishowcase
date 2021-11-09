@@ -7,13 +7,3 @@ export enum Formatos {
     "ONA" = 5,
     "Banda Sonora" = 6,
 }
-
-/*
-    TV,
-    CORTO_TV,
-    PELICULA,
-    ESPECIAL,
-    OVA,
-    ONA,
-    MUSICA
-*/

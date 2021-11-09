@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { AnimeInfo } from '../Entities/AnimeInfo';
 import { List, Card, Avatar, Pagination } from 'antd';
-import { Formatos } from '../Entities/Formatos';
+import { Formatos } from '../Entities/Formato';
 import { StarOutlined, StarFilled, EllipsisOutlined } from '@ant-design/icons';
 import Meta from 'antd/lib/card/Meta';
 import * as AniApiService from "../Services/AniApiService";
@@ -21,10 +21,9 @@ function Inicio() {
     const history = useHistory();
     const dispatch = useDispatch();
     const AnimeStore = useSelector((state: State) => state.favorites);
-    const { user, setUser } = useContext(FirebaseUserData);
+    const { setUser } = useContext(FirebaseUserData);
     const hash:string = location.hash;
     const extractedToken = hash?.slice(14);
-
 
     const onPageChange = (pagina: any) => {
         getList(pagina);
@@ -42,6 +41,7 @@ function Inicio() {
                             username: data?.username,
                             email: data?.email
                         }
+                        console.log("Usuario guardado: " + JSON.stringify(userData));
                         setUser(userData);
                     }
             });

@@ -1,30 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { List, Avatar, Skeleton, Divider, Card } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Comentario } from '../Entities/Comentarios';
+import { Comentario } from '../Entities/Comentario';
+import useComentariosFDB from '../Firebase/FirebaseDatabase';
 
-const Comentarios = () => {
-    const [loading, setLoading] = useState(false);
-    const [comentarios, setComentarios] = useState<Array<Comentario>>();
+const Comentarios = ({ animeId }: { animeId: number }) => {
+    //const [comentarios, setComentarios] = useState<Array<Comentario>>();
+    let pagina = 0;
+
+    const { getAllForCurrentAnime, documents } = useComentariosFDB("comentarios");
 
     const cargarComentarios = () => {
-        if (loading) {
-          return;
-        }
-        setLoading(true);
-        fetch('https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo')
-          .then(res => res.json())
-          .then(body => {
-              console.log("Body: " + JSON.stringify(body));
-              setComentarios((comentarios !== undefined) ? [...comentarios, ...body.results] : [...body.results]);
-              console.log("Comentarios: " + comentarios);
-          })
-          .catch((error) => {
-            console.error("Ocurrio un error. " + error)
-          })
-          .finally(()=> {
-            setLoading(false);
-          });
+        getAllForCurrentAnime(animeId);
+        /*
+        const registroActual = pagina * 10;
+        const registroFinal = registroActual + 10;
+        console.log(`animeId: ${animeId}, registroActual: ${registroActual}, registroFinal: ${registroFinal}`);
+        getPageForCurrentAnime(animeId, registroActual, registroFinal);
+        pagina++;
+
+        {item.timestamp}
+        */
     };
 
     useEffect(() => {
@@ -40,28 +36,29 @@ const Comentarios = () => {
                 padding: '0 16px',
                 border: '1px solid rgba(140, 140, 140, 0.35)',
             }}>
-                {(comentarios !== undefined) ?
+                {
+                ((documents !== undefined) && (documents.length > 0)) ?
                     <InfiniteScroll
-                        dataLength={comentarios.length}
+                        dataLength={documents.length}
                         next={cargarComentarios}
-                        hasMore={comentarios.length < 100}
+                        hasMore={documents.length < 1}
                         loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
                         endMessage={<Divider plain>Has alcanzado el final de los comentarios ¿Porque no hacer uno nuevo?</Divider>}
                         scrollableTarget="scrollableDiv"
                     >
 
                         <List
-                            dataSource={comentarios}
+                            dataSource={documents}
                             renderItem={item => (
                                 <List.Item key={item.id}>
                                     <List.Item.Meta
-                                        //avatar={<Avatar src={item.picture.large} />}
-                                        title={<a href="https://ant.design">{item.name.last}</a>}
-                                        description={item.email}
+                                        avatar={new Date(item.timestamp).toISOString()}
+                                        title={"Usuario: " + item.nombre_usuario}
+                                        description={item.comentario}
                                     />
-                                    <div>Comentario</div>
+                                    <div>Puntuacion: {item.puntuacion}</div>
                                 </List.Item>
-                        )}
+                            )}
                         />
                     </InfiniteScroll>
                     :

@@ -1,5 +1,5 @@
-import { Estados } from "./Estados";
-import { Formatos } from "./Formatos";
+import { Estados } from "./Estado";
+import { Formatos } from "./Formato";
 
 interface Descriptions {
     en: string;

@@ -3,10 +3,11 @@ import Meta from 'antd/lib/card/Meta';
 import { StarFilled, EllipsisOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AnimeInfo } from '../Entities/AnimeInfo';
-import { Formatos } from '../Entities/Formatos';
+import { Formatos } from '../Entities/Formato';
 import { AnimeReduxActionType } from '../Redux/AnimeReducer';
 import { State } from '../Redux/initialState';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Favoritos() {
     const AnimeStore = useSelector((state: State) => state.favorites);
@@ -40,7 +41,11 @@ function Favoritos() {
                         <Card
                             hoverable
                             style={{ width: 280 }}
-                            cover={<img alt="portada" src={element.cover_image}/>}
+                            cover={
+								<Link to={`/detalles/${element.id}`}>
+                                    <img alt="portada" style={{ width: 280 }} src={element.cover_image}/>
+                                </Link>
+                            }
                             actions={
                                 [
                                     <StarFilled

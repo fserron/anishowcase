@@ -1,26 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AnimeInfo } from '../Entities/AnimeInfo';
-import { Descriptions, Image, Button, Collapse, Form, Rate } from 'antd';
-import { Formatos } from '../Entities/Formatos';
+import { Descriptions, Image, Button, Collapse, Form, Rate, Typography } from 'antd';
+import { Formatos } from '../Entities/Formato';
 import { AniApiConfig } from '../Services/AniApiConfig';
 import Comentarios from './Comentarios';
 import TextArea from 'antd/lib/input/TextArea';
-//import useFirebaseDatabase from '../firebase/useFirebaseDatabase';
+import { FirebaseUserData } from '../Firebase/FirebaseUserData';
+import { Comentario } from '../Entities/Comentario';
+import useComentariosFDB from '../Firebase/FirebaseDatabase';
 
 const Detalles = () => {
     const location = useLocation();
     const history = useHistory();
     const animeId = location.pathname.split("/").pop();
+    const aID: number = (animeId) ? Number(animeId) : 0;
     const [ animeInfo, setAnimeInfo ] = useState<AnimeInfo>();
+    const { user } = useContext(FirebaseUserData);
 
     const [form] = Form.useForm();
 
-    //const { save, update, documents, loading } = useFirebaseDatabase("comentarios");
+    const { saveComment, getAllForCurrentAnime, documents, loading } = useComentariosFDB("comentarios");
     const [ selectedId, setSelectedId ] = useState<string>("");
 
     const onFinish = (values: any) => {
-        values.finished = values.finished !== undefined ? values.finished : false;
+        const nuevoComentario: Comentario = {
+            usuario_id: (user?.id) ? user?.id : 0,
+            nombre_usuario: (user?.username) ? user?.username : "Anonimo",
+            anime_id: (animeInfo?.id) ? animeInfo?.id : 0,
+            puntuacion: values?.puntuacion,
+            comentario: values?.comentario,
+            timestamp: new Date().valueOf()
+        }
+        console.log("Comentario: " + JSON.stringify(nuevoComentario));
+
+        saveComment(nuevoComentario).then(() => {
+            form.resetFields();
+            console.log("Comentario guardado ok.");
+        });
+
         /*
         if (selectedId === "") {
             save(values).then(() => {
@@ -36,11 +54,12 @@ const Detalles = () => {
     };
     
     useEffect(() => {
-        getDetails(animeId);
+        getDetails(aID);
+        getAllForCurrentAnime(aID);
     }, []); //Con el [] al final espera a que se haya terminado de cargar (ComponentDidMount)
 
     //Pasar a servicio
-    const getDetails = (animeId: string | undefined) => {
+    const getDetails = (animeId: number) => {
         AniApiConfig.get('/anime/' + animeId)
             .then(({ data }: { data: any }) => {
                 setAnimeInfo(data);
@@ -88,8 +107,8 @@ const Detalles = () => {
                                 <span className="center">No hay trailer disponible</span>
                             }
                 </Descriptions.Item>
-                <Descriptions.Item label="Comentarios" span={4}>
-                    <Comentarios/>
+                <Descriptions.Item label={`Comentarios (${documents.length})`} span={4}>
+                    <Comentarios animeId={aID}/>
                 </Descriptions.Item>
                 <Descriptions.Item label="Nuevo Comentario" span={4}>
                 <Form
@@ -102,18 +121,25 @@ const Detalles = () => {
                     autoComplete="off"
                 >
                     <Form.Item
+                        label="Usuario"
+                        name="user"
+                    >
+                        <Typography.Text>{user?.username}</Typography.Text>
+                    </Form.Item>
+
+                    <Form.Item
                         label="Puntuación"
-                        name="name"
+                        name="puntuacion"
                         rules={[
-                            { required: true, message: '¡Hace falta una puntuacion!' },
+                            { required: true, message: '¡Hace falta una puntuación!' },
                         ]}
                     >
-                        <Rate allowHalf defaultValue={2.5} />
+                        <Rate allowHalf />
                     </Form.Item>
 
                     <Form.Item
                         label="Comentario"
-                        name="name"
+                        name="comentario"
                         rules={[
                             { required: true, message: 'Campo obligatorio!' },
                         ]}
@@ -126,6 +152,7 @@ const Detalles = () => {
                             Enviar
                         </Button>
                     </Form.Item>
+                    
                 </Form>
                 </Descriptions.Item>
             </Descriptions>
