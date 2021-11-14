@@ -53,29 +53,6 @@ function Inicio() {
     }
 
     const addToFavorites = (anime: AnimeInfo) => {
-        getUser((user?.user_id !== undefined) ? user.user_id : 0);
-        let fbUser: UserData = documents[0];
-        const fav_info: AnimeInfo = {
-            id: anime.id,
-            titles: {
-                en: anime.titles.en,
-            },
-            cover_image: anime.cover_image,
-            score: anime.score,
-            format: anime.format,
-        }
-        if (!fbUser || !fbUser.id) { //No existe el usuario, se crea
-            if (user) {
-                fbUser = user;
-                fbUser.favorites = [];
-                fbUser.favorites.push(fav_info);
-                saveUser(fbUser);
-            }
-        } else { //Existe el usuario, se actualiza
-            if (!fbUser.favorites) fbUser.favorites = [];
-            fbUser.favorites.push(fav_info);
-            updateUser(fbUser.id, fbUser);
-        }
         dispatch({type: AnimeReduxActionType.AGREGAR, payload: anime})
     }
 
