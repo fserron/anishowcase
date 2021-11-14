@@ -12,6 +12,7 @@ import { StorageUtil } from "./Services/StorageService";
 
 import { Layout } from 'antd';
 import Favoritos from './Screens/Favoritos';
+import Logout from './Screens/Logout';
 const { Header, Content, Footer } = Layout;
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
                       {(JSON.stringify(user) === "{}") && <Redirect to={"/login"} /> }
                     </Route>
                     <Route path="/login"><Login /></Route>
+                    <Route path="/logout"><Logout /></Route>
                     <Route path="/inicio"><Inicio /></Route>
                     <Route path="/favoritos">
                       {(JSON.stringify(user) === "{}") ? <Redirect to={"/login"} /> : <Favoritos /> }

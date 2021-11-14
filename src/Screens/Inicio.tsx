@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { AnimeInfo } from '../Entities/AnimeInfo';
-import { List, Card, Avatar, Pagination, Badge } from 'antd';
+import { List, Card, Pagination, Badge } from 'antd';
 import { Formatos } from '../Entities/Formato';
 import { StarOutlined, StarFilled, EyeOutlined } from '@ant-design/icons';
 import Meta from 'antd/lib/card/Meta';
@@ -9,8 +9,6 @@ import * as AniApiService from "../Services/AniApiService";
 import { useDispatch, useSelector } from 'react-redux';
 import { AnimeReduxActionType } from '../Redux/AnimeReducer';
 import { State } from '../Redux/initialState';
-import { FirebaseUserData, UserData } from '../Firebase/FirebaseUserData';
-import { useUsuariosFDB } from '../Firebase/FirebaseDatabase';
 import { StorageUtil } from "../Services/StorageService";
 
 function Inicio() {
@@ -20,8 +18,6 @@ function Inicio() {
     const dispatch = useDispatch();
     const history = useHistory();
     const AnimeStore = useSelector((state: State) => state.favorites);
-    const { user } = useContext(FirebaseUserData);
-    const { getUser, updateUser, saveUser, documents } = useUsuariosFDB("usuarios");
     const { saveSessionData, loadSessionData } = StorageUtil();
     const KEY_LIST = "anime.list.data.";
     const KEY_SIZE = "anime.list.size";
@@ -79,7 +75,7 @@ function Inicio() {
                             hoverable
                             style={{ width: 180 }}
                             cover={
-								<Link to={`/detalles/${element.id}`}>
+                                <Link to={`/detalles/${element.id}`}>
                                     <Badge.Ribbon text={`${element.score}`}>
                                         <img alt="portada" style={{ width: 180 }} src={element.cover_image}/>
                                     </Badge.Ribbon>
