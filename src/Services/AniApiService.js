@@ -8,7 +8,7 @@ export const setUpUser = extractedToken => {
 };
 
 export const getAnimeByPage = pagina => {
-  return AniApiConfig.get(`/anime?nsfw=true&page=${pagina}`);
+  return AniApiConfig.get(`/anime?nsfw=true&per_page=16&page=${pagina}`);
 };
 
 export const getAnimeDatails = id => {

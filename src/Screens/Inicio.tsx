@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { AnimeInfo } from '../Entities/AnimeInfo';
-import { List, Card, Avatar, Pagination } from 'antd';
+import { List, Card, Avatar, Pagination, Badge } from 'antd';
 import { Formatos } from '../Entities/Formato';
 import { StarOutlined, StarFilled, EyeOutlined } from '@ant-design/icons';
 import Meta from 'antd/lib/card/Meta';
@@ -103,7 +103,9 @@ function Inicio() {
                             style={{ width: 180 }}
                             cover={
 								<Link to={`/detalles/${element.id}`}>
-                                    <img alt="portada" style={{ width: 180 }} src={element.cover_image}/>
+                                    <Badge.Ribbon text={`${element.score}`}>
+                                        <img alt="portada" style={{ width: 180 }} src={element.cover_image}/>
+                                    </Badge.Ribbon>
                                 </Link>
                             }
                             actions={
@@ -123,8 +125,7 @@ function Inicio() {
                                     ]
                             }
                             >
-                            <Meta 
-                                avatar={<Avatar style={{ color: '#ffffff', backgroundColor: '#000000' }}>{element.score}</Avatar>}
+                            <Meta
                                 title={element.titles.en} 
                                 description={Formatos[element.format]} />
                         </Card>
@@ -134,7 +135,7 @@ function Inicio() {
             <Pagination 
                 current={paginaActual} 
                 onChange={onPageChange} 
-                defaultPageSize={100}
+                defaultPageSize={16}
                 total={itemsTotales} 
                 showQuickJumper={true}
                 showSizeChanger={false}
