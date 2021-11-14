@@ -1,9 +1,12 @@
 import { createContext } from "react";
+import { AnimeInfo } from "../Entities/AnimeInfo";
 
 export interface UserData {
-    id?: number;
+    id?: string;
+    user_id?: number;
     username?: string;
     email?: string;
+    favorites?: Array<AnimeInfo>;
 }
 
 export interface FirebaseUserContext {

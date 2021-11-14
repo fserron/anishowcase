@@ -11,7 +11,7 @@ function Nav() {
                 <Item key='1'>
                     <NavLink 
                         activeClassName="selected"
-                        activeStyle={{color: "red"}}
+                        activeStyle={{fontWeight: "bold", color: "#0F4C81"}}
                         to="/inicio">
                         Inicio
                     </NavLink>
@@ -19,41 +19,13 @@ function Nav() {
                 <Item key='2'>
                     <NavLink 
                         activeClassName="selected"
-                        activeStyle={{color: "red"}}
+                        activeStyle={{fontWeight: "bold", color: "#0F4C81"}}
                         to="/favoritos">
-                        Favoritos
-                    </NavLink>
-                </Item>
-                <Item key='3'>
-                    <NavLink 
-                        activeClassName="selected"
-                        activeStyle={{color: "red"}}
-                        to="/acerca">
-                        Acerca
+                        Mis Favoritos
                     </NavLink>
                 </Item>
             </Menu>
         </>
     )
 }
-/*
-
-
-            <nav>
-                <li className="nav-item">
-                    
-                </li>
-                <li className="nav-item">
-
-                </li>
-                <li className="nav-item">
-                    <NavLink 
-                        activeClassName="selected"
-                        activeStyle={{color: "red"}}
-                        to="/about">
-                        About
-                    </NavLink>
-                </li>
-            </nav>
-*/
 export default Nav;

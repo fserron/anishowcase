@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notification } from 'antd';
 
 const AniApiConfig = axios.create({
     baseURL: 'https://api.aniapi.com/v1',
@@ -11,6 +12,8 @@ AniApiConfig.interceptors.request.use(function (config) {
     return config;
   }, function (error) {
     // Do something with request error
+    console.error(JSON.stringify(error));
+    notification.error({ message: "Ocurrió un error al comunicarse con AniApi: " + error?.message});
     return Promise.reject(error);
   });
 
@@ -22,6 +25,8 @@ AniApiConfig.interceptors.response.use(function (response) {
   }, function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+    console.error(JSON.stringify(error));
+    notification.error({ message: "Ocurrió un error al comunicarse con AniApi: " + error?.message});
     return Promise.reject(error);
   });
 

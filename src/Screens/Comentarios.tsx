@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { List, Avatar, Skeleton, Divider, Card } from 'antd';
+import React, { useEffect } from 'react';
+import { List, Skeleton, Divider, Card } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Comentario } from '../Entities/Comentario';
-import useComentariosFDB from '../Firebase/FirebaseDatabase';
+import { useComentariosFDB } from '../Firebase/FirebaseDatabase';
 
 const Comentarios = ({ animeId }: { animeId: number }) => {
-    //const [comentarios, setComentarios] = useState<Array<Comentario>>();
-    let pagina = 0;
 
     const { getAllForCurrentAnime, documents } = useComentariosFDB("comentarios");
 
     const cargarComentarios = () => {
         getAllForCurrentAnime(animeId);
-        /*
-        const registroActual = pagina * 10;
-        const registroFinal = registroActual + 10;
-        console.log(`animeId: ${animeId}, registroActual: ${registroActual}, registroFinal: ${registroFinal}`);
-        getPageForCurrentAnime(animeId, registroActual, registroFinal);
-        pagina++;
-
-        {item.timestamp}
-        */
     };
 
     useEffect(() => {
@@ -53,7 +41,7 @@ const Comentarios = ({ animeId }: { animeId: number }) => {
                                 <List.Item key={item.id}>
                                     <List.Item.Meta
                                         avatar={new Date(item.timestamp).toISOString()}
-                                        title={"Usuario: " + item.nombre_usuario}
+                                        title={`Usuario: ${item.nombre_usuario} (${item.email})` }
                                         description={item.comentario}
                                     />
                                     <div>Puntuacion: {item.puntuacion}</div>

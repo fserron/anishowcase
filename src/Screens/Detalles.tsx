@@ -3,12 +3,12 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { AnimeInfo } from '../Entities/AnimeInfo';
 import { Descriptions, Image, Button, Collapse, Form, Rate, Typography } from 'antd';
 import { Formatos } from '../Entities/Formato';
-import { AniApiConfig } from '../Services/AniApiConfig';
+import * as AniApiService from "../Services/AniApiService";
 import Comentarios from './Comentarios';
 import TextArea from 'antd/lib/input/TextArea';
 import { FirebaseUserData } from '../Firebase/FirebaseUserData';
 import { Comentario } from '../Entities/Comentario';
-import useComentariosFDB from '../Firebase/FirebaseDatabase';
+import { useComentariosFDB } from '../Firebase/FirebaseDatabase';
 
 const Detalles = () => {
     const location = useLocation();
@@ -20,47 +20,32 @@ const Detalles = () => {
 
     const [form] = Form.useForm();
 
-    const { saveComment, getAllForCurrentAnime, documents, loading } = useComentariosFDB("comentarios");
-    const [ selectedId, setSelectedId ] = useState<string>("");
+    const { saveComment, getAllForCurrentAnime, documents } = useComentariosFDB("comentarios");
 
     const onFinish = (values: any) => {
         const nuevoComentario: Comentario = {
-            usuario_id: (user?.id) ? user?.id : 0,
+            usuario_id: (user?.user_id) ? user?.user_id : 0,
             nombre_usuario: (user?.username) ? user?.username : "Anonimo",
             anime_id: (animeInfo?.id) ? animeInfo?.id : 0,
             puntuacion: values?.puntuacion,
             comentario: values?.comentario,
-            timestamp: new Date().valueOf()
+            timestamp: new Date().valueOf(),
+            email: (user?.email) ? user?.email : "Sin email"
         }
-        console.log("Comentario: " + JSON.stringify(nuevoComentario));
 
         saveComment(nuevoComentario).then(() => {
             form.resetFields();
-            console.log("Comentario guardado ok.");
         });
 
-        /*
-        if (selectedId === "") {
-            save(values).then(() => {
-                form.resetFields();
-            });
-        } else {
-            update(selectedId, values).then(() => {
-                form.resetFields();
-                setSelectedId("");
-            });
-        }
-        */
     };
     
     useEffect(() => {
         getDetails(aID);
         getAllForCurrentAnime(aID);
-    }, []); //Con el [] al final espera a que se haya terminado de cargar (ComponentDidMount)
+    }, []);
 
-    //Pasar a servicio
     const getDetails = (animeId: number) => {
-        AniApiConfig.get('/anime/' + animeId)
+        AniApiService.getAnimeDatails(animeId)
             .then(({ data }: { data: any }) => {
                 setAnimeInfo(data);
         });
@@ -81,10 +66,10 @@ const Detalles = () => {
 
                 <Descriptions.Item label="Episodios">{animeInfo?.episodes_count}</Descriptions.Item>
                 <Descriptions.Item label="Duración">{animeInfo?.episode_duration} Minutos.</Descriptions.Item>
-                <Descriptions.Item label="Fecha estreno">{animeInfo?.start_date.split("T")[0]}</Descriptions.Item>
-                <Descriptions.Item label="Fecha fin">{animeInfo?.end_date.split("T")[0]}</Descriptions.Item>
+                <Descriptions.Item label="Fecha estreno">{animeInfo?.start_date?.split("T")[0]}</Descriptions.Item>
+                <Descriptions.Item label="Fecha fin">{animeInfo?.end_date?.split("T")[0]}</Descriptions.Item>
 
-                <Descriptions.Item label="Descripcion" span={4}>{(animeInfo?.descriptions.es) ? animeInfo?.descriptions.es : animeInfo?.descriptions.en}</Descriptions.Item>
+                <Descriptions.Item label="Descripcion" span={4}>{(animeInfo?.descriptions?.es) ? animeInfo?.descriptions.es : animeInfo?.descriptions?.en}</Descriptions.Item>
                 
                 <Descriptions.Item label="Trailer" span={4}>
                             {(animeInfo?.trailer_url) ?
@@ -108,53 +93,56 @@ const Detalles = () => {
                             }
                 </Descriptions.Item>
                 <Descriptions.Item label={`Comentarios (${documents.length})`} span={4}>
-                    <Comentarios animeId={aID}/>
+                        <Comentarios animeId={aID}/>
                 </Descriptions.Item>
-                <Descriptions.Item label="Nuevo Comentario" span={4}>
-                <Form
-                    form={form}
-                    name="basic"
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                    initialValues={{ remember: true }}
-                    onFinish={onFinish}
-                    autoComplete="off"
-                >
-                    <Form.Item
-                        label="Usuario"
-                        name="user"
-                    >
-                        <Typography.Text>{user?.username}</Typography.Text>
-                    </Form.Item>
+                {(user?.user_id !== undefined) ?
+                    <Descriptions.Item label="Nuevo Comentario" span={4}>
+                        <Form
+                            form={form}
+                            name="basic"
+                            labelCol={{ span: 8 }}
+                            wrapperCol={{ span: 16 }}
+                            initialValues={{ remember: true }}
+                            onFinish={onFinish}
+                            autoComplete="off"
+                        >
+                            <Form.Item
+                                label="Usuario"
+                                name="user"
+                            >
+                                <Typography.Text>{user?.username}</Typography.Text>
+                            </Form.Item>
 
-                    <Form.Item
-                        label="Puntuación"
-                        name="puntuacion"
-                        rules={[
-                            { required: true, message: '¡Hace falta una puntuación!' },
-                        ]}
-                    >
-                        <Rate allowHalf />
-                    </Form.Item>
+                            <Form.Item
+                                label="Puntuación"
+                                name="puntuacion"
+                                rules={[
+                                    { required: true, message: '¡Hace falta una puntuación!' },
+                                ]}
+                            >
+                                <Rate allowHalf />
+                            </Form.Item>
 
-                    <Form.Item
-                        label="Comentario"
-                        name="comentario"
-                        rules={[
-                            { required: true, message: 'Campo obligatorio!' },
-                        ]}
-                    >
-                        <TextArea rows={4} />
-                    </Form.Item>
+                            <Form.Item
+                                label="Comentario"
+                                name="comentario"
+                                rules={[
+                                    { required: true, message: '¡Hace falta un comentario!' },
+                                ]}
+                            >
+                                <TextArea rows={4} />
+                            </Form.Item>
 
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        <Button type="primary" htmlType="submit">
-                            Enviar
-                        </Button>
-                    </Form.Item>
-                    
-                </Form>
-                </Descriptions.Item>
+                            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                                <Button type="primary" htmlType="submit">
+                                    Enviar
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </Descriptions.Item>
+                    :
+                    <span className="center">Para dejar comentarios debes estar registrado.</span>
+                }
             </Descriptions>
             <div className="center">
                 <Button type="primary" onClick={() => history.goBack()}>Volver</Button>

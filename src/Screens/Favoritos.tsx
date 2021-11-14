@@ -19,7 +19,6 @@ function Favoritos() {
     };
 
     const removeFromFavorites = (anime: AnimeInfo) => {
-        console.log("Se quita de favoritos el item: " + JSON.stringify(anime.titles.en));
         dispatch({type: AnimeReduxActionType.QUITAR, payload: anime})
     }
     
@@ -29,21 +28,21 @@ function Favoritos() {
                 grid={{
                     gutter: 16,
                     xs: 1,
-                    sm: 1,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 5,
+                    sm: 2,
+                    md: 3,
+                    lg: 4,
+                    xl: 5,
+                    xxl: 8,
                 }}
                 dataSource={AnimeStore}
                 renderItem={element => (
                     <List.Item>
                         <Card
                             hoverable
-                            style={{ width: 280 }}
+                            style={{ width: 180 }}
                             cover={
 								<Link to={`/detalles/${element.id}`}>
-                                    <img alt="portada" style={{ width: 280 }} src={element.cover_image}/>
+                                    <img alt="portada" style={{ width: 180 }} src={element.cover_image}/>
                                 </Link>
                             }
                             actions={
@@ -70,7 +69,6 @@ function Favoritos() {
                 total={AnimeStore.length} 
                 showQuickJumper={true}
                 showSizeChanger={false}
-                //Agregar items en blanco mientras carga
             />
         </>
     )
